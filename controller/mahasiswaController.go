@@ -44,7 +44,7 @@ func (controller *MahasiswaController) CreateMahasiswa(c *gin.Context) {
 }
 
 func (controller *MahasiswaController) GetAllMahasiswa(c *gin.Context) {
-	var mahasiswa models.Mahasiswa
+	var mahasiswa []models.Mahasiswa
 
 	if err := controller.DB.Find(&mahasiswa).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
