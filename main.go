@@ -4,18 +4,45 @@ import (
 	"log"
 
 	"github.com/Lotsoo/GoDroidAPI/config"
+	"github.com/Lotsoo/GoDroidAPI/controller"
+	"github.com/Lotsoo/GoDroidAPI/models"
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"gorm.io/gorm"
 )
 
-func main() {
+var db *gorm.DB
+
+func init() {
+	// Load .env
 	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error: ", err)
-		return
+		log.Fatal("Failed to load .env file", err)
 	}
 
-	db, err := config.InitDb()
+	var err error
+
+	// Init database
+	db, err = config.InitDb()
 	if err != nil {
-		log.Fatal("Error: ", err)
-		return
+		log.Fatal("Failed to connect to the database: ", err)
 	}
+
+	// migrasi
+	if err := db.AutoMigrate(&models.Mahasiswa{}); err != nil {
+		log.Fatal("Failed to migrate: ", err)
+	}
+}
+
+func main() {
+	r := gin.Default()
+
+	mahasiswaController := controller.NewMahasiswaController(db)
+
+	api := r.Group("/api/v1")
+	{
+		api.POST("/mahasiswa", mahasiswaController.CreateMahasiswa)
+	}
+
+	r.Run(":8080")
+
 }
