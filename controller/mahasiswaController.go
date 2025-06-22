@@ -43,7 +43,7 @@ func (controller *MahasiswaController) CreateMahasiswa(c *gin.Context) {
 	})
 }
 
-func (controller *MahasiswaController) GetAllMahasiswaByID(c *gin.Context) {
+func (controller *MahasiswaController) GetAllMahasiswa(c *gin.Context) {
 	var mahasiswa models.Mahasiswa
 
 	if err := controller.DB.Find(&mahasiswa).Error; err != nil {
@@ -57,6 +57,25 @@ func (controller *MahasiswaController) GetAllMahasiswaByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
 		"result": mahasiswa,
+	})
+
+}
+
+func (controller *MahasiswaController) GetMahasiswaByID(c *gin.Context) {
+	id := c.Param("id")
+	var mahasiswa models.Mahasiswa
+
+	if err := controller.DB.Find(&mahasiswa, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status":  "error",
+			"message": "Data not found",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"data":   mahasiswa,
 	})
 
 }
