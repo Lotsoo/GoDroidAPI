@@ -41,6 +41,7 @@ func main() {
 	api := r.Group("/api/v1")
 	{
 		api.POST("/mahasiswa", mahasiswaController.CreateMahasiswa)
+		api.GET("/mahasiswa", mahasiswaController.GetAllMahasiswaByID)
 	}
 
 	r.Run(":8080")

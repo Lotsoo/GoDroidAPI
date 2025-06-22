@@ -42,3 +42,21 @@ func (controller *MahasiswaController) CreateMahasiswa(c *gin.Context) {
 		"data":    mahasiswa,
 	})
 }
+
+func (controller *MahasiswaController) GetAllMahasiswaByID(c *gin.Context) {
+	var mahasiswa models.Mahasiswa
+
+	if err := controller.DB.Find(&mahasiswa).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "error",
+			"message": "Failed to get all data",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"result": mahasiswa,
+	})
+
+}
