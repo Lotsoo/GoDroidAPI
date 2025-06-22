@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/Lotsoo/GoDroidAPI/config"
 	"github.com/Lotsoo/GoDroidAPI/controller"
@@ -17,7 +18,7 @@ var db *gorm.DB
 func init() {
 	// Load .env
 	if err := godotenv.Load(); err != nil {
-		log.Fatal("Failed to load .env file", err)
+		log.Println("Failed to load .env file", err)
 	}
 
 	var err error
@@ -25,16 +26,23 @@ func init() {
 	// Init database
 	db, err = config.InitDb()
 	if err != nil {
-		log.Fatal("Failed to connect to the database: ", err)
+		log.Println("Failed to connect to the database: ", err)
 	}
 
 	// migrasi
 	if err := db.AutoMigrate(&models.Mahasiswa{}); err != nil {
-		log.Fatal("Failed to migrate: ", err)
+		log.Println("Failed to migrate: ", err)
 	}
 }
 
 func main() {
+	ginMode := os.Getenv("GIN_MODE")
+	if ginMode == "" {
+		ginMode = gin.DebugMode
+	}
+
+	gin.SetMode(ginMode)
+
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
@@ -55,7 +63,7 @@ func main() {
 		api.DELETE("/mahasiswa/:id", mahasiswaController.DeleteMahasiswa)
 	}
 
-	log.Println("Server running on port 3000")
+	log.Println("Server running on port 3000 in", gin.Mode(), "mode")
 	r.Run(":3000")
 
 }
