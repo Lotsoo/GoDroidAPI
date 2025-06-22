@@ -43,6 +43,7 @@ func main() {
 		api.POST("/mahasiswa", mahasiswaController.CreateMahasiswa)
 		api.GET("/mahasiswa", mahasiswaController.GetAllMahasiswa)
 		api.GET("/mahasiswa/:id", mahasiswaController.GetMahasiswaByID)
+		api.PUT("/mahasiswa/:id", mahasiswaController.UpdateMahasiswa)
 	}
 
 	r.Run(":8080")

@@ -79,3 +79,41 @@ func (controller *MahasiswaController) GetMahasiswaByID(c *gin.Context) {
 	})
 
 }
+
+func (controller *MahasiswaController) UpdateMahasiswa(c *gin.Context) {
+	id := c.Param("id")
+	var mahasiswa models.Mahasiswa
+
+	if err := controller.DB.Find(&mahasiswa, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status":  "error",
+			"message": "Data not found",
+		})
+		return
+	}
+
+	var updateInput models.Mahasiswa
+	if err := c.ShouldBindJSON(&updateInput); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": "Validation failed",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	if err := controller.DB.Model(&mahasiswa).Updates(updateInput).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "error",
+			"message": "Failed to update student",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Data student updated successfully",
+		"data":    mahasiswa,
+	})
+
+}
