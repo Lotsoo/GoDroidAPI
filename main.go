@@ -7,13 +7,17 @@ import (
 	"github.com/Lotsoo/GoDroidAPI/config"
 	"github.com/Lotsoo/GoDroidAPI/controller"
 	"github.com/Lotsoo/GoDroidAPI/models"
+	"github.com/Lotsoo/GoDroidAPI/websocket"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 )
 
-var db *gorm.DB
+var (
+	db  *gorm.DB
+	hub *websocket.Hub
+)
 
 func init() {
 	// Load .env
@@ -52,7 +56,14 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	mahasiswaController := controller.NewMahasiswaController(db)
+	hub = websocket.NewHub()
+	go hub.Run()
+
+	mahasiswaController := controller.NewMahasiswaController(db, hub)
+
+	r.GET("/ws", func(c *gin.Context) {
+		websocket.ServeWs(hub, c.Writer, c.Request)
+	})
 
 	api := r.Group("/api/v1")
 	{
