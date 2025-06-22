@@ -117,3 +117,37 @@ func (controller *MahasiswaController) UpdateMahasiswa(c *gin.Context) {
 	})
 
 }
+
+func (controller *MahasiswaController) DeleteMahasiswa(c *gin.Context) {
+	id := c.Param("id")
+	var mahasiswa models.Mahasiswa
+
+	if err := controller.DB.Find(&mahasiswa, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status":  "error",
+			"message": "Data not found",
+		})
+		return
+	}
+
+	result := controller.DB.Delete(&mahasiswa, id)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "error",
+			"message": "Failed to delete student",
+		})
+	}
+
+	if result.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status":  "error",
+			"message": "Data not found",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Data student deleted successfully",
+	})
+}

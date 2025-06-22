@@ -44,8 +44,9 @@ func main() {
 		api.GET("/mahasiswa", mahasiswaController.GetAllMahasiswa)
 		api.GET("/mahasiswa/:id", mahasiswaController.GetMahasiswaByID)
 		api.PUT("/mahasiswa/:id", mahasiswaController.UpdateMahasiswa)
+		api.DELETE("/mahasiswa/:id", mahasiswaController.DeleteMahasiswa)
 	}
 
-	r.Run(":8080")
+	r.Run(":3000")
 
 }
